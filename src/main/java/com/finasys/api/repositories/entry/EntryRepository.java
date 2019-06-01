@@ -12,4 +12,6 @@ import com.finasys.api.models.Entry;
  */
 public interface EntryRepository extends JpaRepository<Entry, Long>, EntryRepositoryCustom {
 
+	Long countByAtivoAndCategoriaId(boolean ativo, Long idCategoria);
+	Long countByAtivoAndStatusId(boolean ativo, Long idStatus);
 }

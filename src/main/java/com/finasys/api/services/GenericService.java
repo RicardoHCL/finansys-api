@@ -38,19 +38,19 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 		return this.getRepositorio().findAll();
 	}
 
-	public ENTIDADE converterDTOParaEntidade(ENTIDADEDTO dto) throws GenericException { return null; }
+	public abstract ENTIDADE converterDTOParaEntidade(ENTIDADEDTO pojoDTO);
 
-	public ENTIDADEDTO converterEntidadeParaDTO(ENTIDADE pojo) throws GenericException { return null; }
+	public abstract ENTIDADEDTO converterEntidadeParaDTO(ENTIDADE pojo);
 
-	public List<ENTIDADE> converterListaDTOParaListaEntidade(List<ENTIDADEDTO> dtos) throws GenericException { return null; }
+	public List<ENTIDADE> converterListaDTOParaListaEntidade(List<ENTIDADEDTO> listaPojosDTOs) throws GenericException { return null; }
 
-	public List<ENTIDADEDTO> converterListaEntidadeParaListaDTO(List<ENTIDADE> pojos) throws GenericException { return null; }
+	public abstract List<ENTIDADEDTO> converterListaEntidadeParaListaDTO(List<ENTIDADE> listaPojos);
 
 	@Transactional(rollbackFor = Exception.class)
 	public void deletar(ID id, User usuario) throws GenericException {
 		ENTIDADE pojo = this.consultarPorId(id).get();
 		this.validarExclusao(pojo);
-		this.resolverPreExcluir(pojo, usuario);
+		this.resolverPreDeletar(pojo, usuario);
 		this.getRepositorio().deleteById(pojo.getId());
 	}
 
@@ -70,22 +70,22 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 	public abstract REPOSITORIO getRepositorio();
 
 	@Transactional(rollbackFor = Exception.class)
-	public void inativar(ENTIDADE pojo, User usuario) throws GenericException {
-		this.validarInativacao(pojo);
-		this.resolverPreInativar(pojo, usuario);
-		ENTIDADE entidade = this.consultarPorId(pojo.getId()).get();
+	public void inativar(ID id, User usuario) throws GenericException {
+		ENTIDADE entidade = this.consultarPorId(id).get();
+		this.validarInativacao(entidade);
+		this.resolverPreInativar(entidade, usuario);
 		entidade.setAtivo(false);
 		entidade.setDataExclusao(FinUtil.getDataAtual());
 		if(usuario != null) {
 			entidade.setUsuario(new User(usuario.getId()));
 		}
 		this.salvarInativacao(entidade, usuario);
-		this.resolverPosInativar(pojo, usuario);
+		this.resolverPosInativar(entidade, usuario);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void inativarSemValidacao(ENTIDADE pojo, User usuario) throws GenericException {
-		ENTIDADE entidade = this.consultarPorId(pojo.getId()).get();
+	public void inativarSemValidacao(ID id, User usuario) throws GenericException {
+		ENTIDADE entidade = this.consultarPorId(id).get();
 		entidade.setAtivo(false);
 		entidade.setDataExclusao(FinUtil.getDataAtual());
 		if(usuario != null) {
@@ -98,9 +98,9 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 
 	public void resolverPosInativar(ENTIDADE pojo, User usuario) throws GenericException { }
 
-	public void resolverPreDependencias(ENTIDADE pojo, User usuario) throws GenericException { }
+	public void resolverPreDeletar(ENTIDADE pojo, User usuario) throws GenericException { }
 
-	public void resolverPreExcluir(ENTIDADE pojo, User usuario) throws GenericException { }
+	public void resolverPreDependencias(ENTIDADE pojo, User usuario) throws GenericException { }
 
 	public void resolverPreInativar(ENTIDADE pojo, User usuario) throws GenericException { }
 

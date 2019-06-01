@@ -1,5 +1,7 @@
 package com.finasys.api.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,24 @@ public class UserService extends GenericService<User, UserDTO, Long, UserReposit
 
 	@Autowired
 	private UserRepository repository;
+
+	@Override
+	public User converterDTOParaEntidade(UserDTO pojoDTO) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserDTO converterEntidadeParaDTO(User pojo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<UserDTO> converterListaEntidadeParaListaDTO(List<User> listaPojos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public UserRepository getRepositorio() {

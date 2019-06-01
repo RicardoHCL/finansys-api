@@ -1,5 +1,7 @@
 package com.finasys.api.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,32 @@ public class EntryService extends GenericService<Entry, EntryDTO, Long, EntryRep
 
 	@Autowired
 	private EntryRepository repository;
+
+	public Long contarLancamentosVinculadoACategoria(Long idCategoria) {
+		return this.repository.countByAtivoAndCategoriaId(true, idCategoria);
+	}
+
+	public Long contarLancamentosVinculadoAoStatus(Long idStatus) {
+		return this.repository.countByAtivoAndStatusId(true, idStatus);
+	}
+
+	@Override
+	public Entry converterDTOParaEntidade(EntryDTO pojoDTO) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EntryDTO converterEntidadeParaDTO(Entry pojo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<EntryDTO> converterListaEntidadeParaListaDTO(List<Entry> listaPojos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public EntryRepository getRepositorio() {

@@ -9,6 +9,7 @@ import com.finasys.api.converter.DozerConverter;
 import com.finasys.api.dtos.StatusDTO;
 import com.finasys.api.exceptions.GenericException;
 import com.finasys.api.models.Status;
+import com.finasys.api.models.User;
 import com.finasys.api.repositories.status.StatusRepository;
 
 /**
@@ -24,14 +25,17 @@ public class StatusService extends GenericService<Status, StatusDTO, Long, Statu
 	@Autowired
 	private StatusRepository repository;
 
+	@Autowired
+	private EntryService entryService;
+
 	public StatusDTO consultar(Long id) {
 		StatusDTO statusDTO = this.converterEntidadeParaDTO(this.consultarPorId(id).get());
 		return statusDTO;
 	}
 
 	@Override
-	public Status converterDTOParaEntidade(StatusDTO dto) throws GenericException {
-		return DozerConverter.converterObjeto(dto, Status.class);
+	public Status converterDTOParaEntidade(StatusDTO pojoDTO) throws GenericException {
+		return DozerConverter.converterObjeto(pojoDTO, Status.class);
 	}
 
 	@Override
@@ -40,12 +44,26 @@ public class StatusService extends GenericService<Status, StatusDTO, Long, Statu
 	}
 
 	@Override
+	public List<StatusDTO> converterListaEntidadeParaListaDTO(List<Status> listaPojos) {
+		return DozerConverter.converterListaObjetos(listaPojos, StatusDTO.class);
+	}
+
+	@Override
 	public StatusRepository getRepositorio() {
 		return this.repository;
 	}
 
 	public List<StatusDTO> listar() {
-		return DozerConverter.converterListaObjetos(this.consultarTodos(), StatusDTO.class);
+		return this.converterListaEntidadeParaListaDTO(this.consultarTodos());
+	}
+
+	@Override
+	public void resolverPreDeletar(Status pojo, User usuario) throws GenericException {
+		Long count = this.entryService.contarLancamentosVinculadoAoStatus(pojo.getId());
+
+		if (count > 0) {
+			throw new GenericException("O status informado não pode ser excluído !");
+		}
 	}
 
 	public StatusDTO salvar(StatusDTO statusDTO) {
