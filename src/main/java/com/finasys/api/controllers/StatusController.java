@@ -28,31 +28,36 @@ import com.finasys.api.services.StatusService;
 @CrossOrigin
 @RestController
 @RequestMapping("/status")
-public class StatusController {
+public class StatusController extends GenericController<StatusDTO, Long> {
 
 	@Autowired
 	private StatusService service;
 
+	@Override
 	@PutMapping
 	public StatusDTO atualizar(@Valid @RequestBody StatusDTO statusDTO) {
 		return this.service.salvar(statusDTO);
 	}
 
+	@Override
 	@PostMapping
 	public StatusDTO cadastrar(@Valid @RequestBody StatusDTO statusDTO) {
 		return this.service.salvar(statusDTO);
 	}
 
+	@Override
 	@GetMapping("/{id}")
 	public StatusDTO consultar(@PathVariable Long id) {
 		return this.service.consultar(id);
 	}
 
+	@Override
 	@DeleteMapping("/{id}")
 	public void excluir(@PathVariable Long id) {
 		this.service.excluir(id, null);
 	}
 
+	@Override
 	@GetMapping
 	public List<StatusDTO> listar(){
 		return this.service.listar();
