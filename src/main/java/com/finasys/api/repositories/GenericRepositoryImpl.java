@@ -20,12 +20,13 @@ import lombok.Setter;
  * @version 31/05/2019
  *
  */
-public abstract class GenericRepositoryImpl<ENTIDADE extends Pojo<ID>, ID extends Serializable> implements GenericRepository<ENTIDADE, ID> {
+public abstract class GenericRepositoryImpl<ENTIDADE extends Pojo<ID>, ID extends Serializable>
+		implements GenericRepository<ENTIDADE, ID> {
 
 	@Autowired
-	@Getter @Setter
+	@Getter
+	@Setter
 	private EntityManager entityManager;
-
 
 	@Override
 	public ENTIDADE buscar(ID id) {
@@ -45,7 +46,6 @@ public abstract class GenericRepositoryImpl<ENTIDADE extends Pojo<ID>, ID extend
 		return (Class<ENTIDADE>) ((ParameterizedType) this.getClass().getGenericSuperclass())
 				.getActualTypeArguments()[0];
 	}
-
 
 	private String getTargetClass() {
 		return this.getClassEntidade().getSimpleName();

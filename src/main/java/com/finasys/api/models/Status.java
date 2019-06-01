@@ -36,7 +36,7 @@ public class Status extends Pojo<Long> {
 
 	@Size(min = 3)
 	@Getter	@Setter
-	@Column(name = "nome", nullable = false)
+	@Column(name = "nome", nullable = false,  unique = true)
 	private String nome;
 
 	@Getter	@Setter

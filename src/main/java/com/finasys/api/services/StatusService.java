@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.finasys.api.converter.DozerConverter;
 import com.finasys.api.dtos.StatusDTO;
+import com.finasys.api.exceptions.GenericException;
 import com.finasys.api.models.Status;
 import com.finasys.api.repositories.status.StatusRepository;
 
@@ -18,19 +19,28 @@ import com.finasys.api.repositories.status.StatusRepository;
  */
 
 @Service
-public class StatusService extends GenericService<Status, Long, StatusRepository> {
+public class StatusService extends GenericService<Status, StatusDTO, Long, StatusRepository> {
 
 	@Autowired
 	private StatusRepository repository;
 
 	public StatusDTO consultar(Long id) {
-		var statusDTO = DozerConverter.converterObjeto(this.consultarPorId(id).get(), StatusDTO.class);
+		StatusDTO statusDTO = this.converterEntidadeParaDTO(this.consultarPorId(id).get());
 		return statusDTO;
 	}
 
 	@Override
-	public StatusRepository getRepositorio() {
+	public Status converterDTOParaEntidade(StatusDTO dto) throws GenericException {
+		return DozerConverter.converterObjeto(dto, Status.class);
+	}
 
+	@Override
+	public StatusDTO converterEntidadeParaDTO(Status pojo) throws GenericException {
+		return DozerConverter.converterObjeto(pojo, StatusDTO.class);
+	}
+
+	@Override
+	public StatusRepository getRepositorio() {
 		return this.repository;
 	}
 
@@ -39,8 +49,8 @@ public class StatusService extends GenericService<Status, Long, StatusRepository
 	}
 
 	public StatusDTO salvar(StatusDTO statusDTO) {
-		var status = DozerConverter.converterObjeto(statusDTO, Status.class);
-		var statusDTOSalvo = DozerConverter.converterObjeto(this.salvar(status, null), StatusDTO.class);
+		Status status = this.converterDTOParaEntidade(statusDTO);
+		StatusDTO statusDTOSalvo = this.converterEntidadeParaDTO(this.salvar(status, null));
 		return statusDTOSalvo;
 	}
 

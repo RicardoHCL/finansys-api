@@ -21,7 +21,7 @@ import com.finasys.api.utils.FinUtil;
  * @author Ricardo Lima
  * @version 31/05/2019
  */
-public abstract class GenericService<ENTIDADE extends Pojo<ID>, ID extends Serializable, REPOSITORIO extends JpaRepository<ENTIDADE, ID>> {
+public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID extends Serializable, REPOSITORIO extends JpaRepository<ENTIDADE, ID>> {
 
 	@Autowired
 	private MessageSource messageSource;
@@ -38,16 +38,17 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ID extends Seria
 		return this.getRepositorio().findAll();
 	}
 
-	public ENTIDADE converterDTOParaObjeto(Object pojo) throws GenericException { return null; }
+	public ENTIDADE converterDTOParaEntidade(ENTIDADEDTO dto) throws GenericException { return null; }
 
-	public List<ENTIDADE> converterListaDTOParaListaObjeto(List<Object> pojo) throws GenericException { return null; }
+	public ENTIDADEDTO converterEntidadeParaDTO(ENTIDADE pojo) throws GenericException { return null; }
 
-	public List<Object> converterListaObjetoParaListaDTO(List<ENTIDADE> pojo) throws GenericException { return null; }
+	public List<ENTIDADE> converterListaDTOParaListaEntidade(List<ENTIDADEDTO> dtos) throws GenericException { return null; }
 
-	public Object converterObjetoParaDTO(ENTIDADE pojo) throws GenericException { return null; }
+	public List<ENTIDADEDTO> converterListaEntidadeParaListaDTO(List<ENTIDADE> pojos) throws GenericException { return null; }
 
 	@Transactional(rollbackFor = Exception.class)
-	public void excluir(ENTIDADE pojo, User usuario) throws GenericException {
+	public void excluir(ID id, User usuario) throws GenericException {
+		ENTIDADE pojo = this.consultarPorId(id).get();
 		this.validarExclusao(pojo);
 		this.resolverPreExcluir(pojo, usuario);
 		this.getRepositorio().deleteById(pojo.getId());

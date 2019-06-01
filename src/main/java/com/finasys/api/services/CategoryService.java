@@ -3,6 +3,7 @@ package com.finasys.api.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.finasys.api.dtos.CategoryDTO;
 import com.finasys.api.models.Category;
 import com.finasys.api.repositories.category.CategoryRepository;
 
@@ -14,7 +15,7 @@ import com.finasys.api.repositories.category.CategoryRepository;
  */
 
 @Service
-public class CategoryService extends GenericService<Category, Long, CategoryRepository>{
+public class CategoryService extends GenericService<Category, CategoryDTO, Long, CategoryRepository>{
 
 	@Autowired
 	private CategoryRepository repository;
