@@ -79,7 +79,7 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 		if(usuario != null) {
 			entidade.setUsuario(new User(usuario.getId()));
 		}
-		this.salvarSemDependenciasSemValidacao(entidade, usuario);
+		this.salvarInativacao(entidade, usuario);
 		this.resolverPosInativar(pojo, usuario);
 	}
 
@@ -91,7 +91,7 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 		if(usuario != null) {
 			entidade.setUsuario(new User(usuario.getId()));
 		}
-		this.salvarSemDependenciasSemValidacao(entidade, usuario);
+		this.salvarInativacao(entidade, usuario);
 	}
 
 	public void resolverPosDependencias(ENTIDADE pojo, User usuario) throws GenericException { }
@@ -116,14 +116,14 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 		if(pojo.getUsuario() != null && pojo.getUsuario().getId()== null){
 			pojo.setUsuario(null);
 		}
-		ENTIDADE pojoBanco = this.salvarEntidade(pojo, usuario);
+		ENTIDADE pojoBanco = this.salvarEntidade(pojo, usuario, false);
 		pojo.setId(pojoBanco.getId());
 		this.resolverPosDependencias(pojo, usuario);
 
 		return pojo;
 	}
 
-	protected ENTIDADE salvarEntidade(ENTIDADE pojo, User usuario) throws GenericException {
+	protected ENTIDADE salvarEntidade(ENTIDADE pojo, User usuario, boolean isExclusao) throws GenericException {
 		pojo.setDataAlteracao(FinUtil.getDataAtual());
 		User usuarioAux = null;
 		if (usuario != null) {
@@ -135,7 +135,16 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 			pojo.setUsuario(usuarioAux);
 			pojo.setDataInclusao(FinUtil.getDataAtual());
 			pojo.setAtivo(true);
+		} else {
+			pojo.setDataInclusao(this.consultarPorId(pojo.getId()).get().getDataInclusao());
+
+			if(isExclusao) {
+				pojo.setAtivo(false);
+			} else {
+				pojo.setAtivo(true);
+			}
 		}
+
 		if (pojo.getUsuario() != null && pojo.getUsuario().getId() == null) {
 			pojo.setUsuario(usuarioAux);
 		}
@@ -151,11 +160,21 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 	}
 
 	@Transactional(rollbackFor = Exception.class)
+	public void salvarInativacao(ENTIDADE pojo, User usuario) throws GenericException {
+		if(pojo.getUsuario() != null && pojo.getUsuario().getId() == null){
+			pojo.setUsuario(null);
+		}
+		ENTIDADE pojoBanco = this.salvarEntidade(pojo, usuario, true);
+		pojo.setId(pojoBanco.getId());
+	}
+
+
+	@Transactional(rollbackFor = Exception.class)
 	public void salvarSemDependenciasSemValidacao(ENTIDADE pojo, User usuario) throws GenericException {
 		if(pojo.getUsuario() != null && pojo.getUsuario().getId() == null){
 			pojo.setUsuario(null);
 		}
-		ENTIDADE pojoBanco = this.salvarEntidade(pojo, usuario);
+		ENTIDADE pojoBanco = this.salvarEntidade(pojo, usuario, false);
 		pojo.setId(pojoBanco.getId());
 	}
 

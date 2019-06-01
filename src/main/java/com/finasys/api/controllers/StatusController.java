@@ -33,8 +33,8 @@ public class StatusController {
 	@Autowired
 	private StatusService service;
 
-	@PutMapping("/{id}")
-	public StatusDTO atualizar(@Valid @RequestBody StatusDTO statusDTO, @PathVariable Long id) {
+	@PutMapping
+	public StatusDTO atualizar(@Valid @RequestBody StatusDTO statusDTO) {
 		return this.service.salvar(statusDTO);
 	}
 
