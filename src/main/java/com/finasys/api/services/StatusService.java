@@ -23,6 +23,11 @@ public class StatusService extends GenericService<Status, Long, StatusRepository
 
 
 
+	public StatusDTO consultar(Long id) {
+		var statusDTO = DozerConverter.converterObjeto(this.buscar(id), StatusDTO.class);
+		return statusDTO;
+	}
+
 	@Override
 	void excluirEntidade(Long id) {
 		this.repository.deleteById(id);
