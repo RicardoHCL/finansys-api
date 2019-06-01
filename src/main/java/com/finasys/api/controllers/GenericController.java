@@ -3,14 +3,10 @@ package com.finasys.api.controllers;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 /**
@@ -22,18 +18,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 public abstract class GenericController<ENTIDADE, ID extends Serializable> {
 
 	@PutMapping
-	abstract ENTIDADE atualizar(@Valid @RequestBody ENTIDADE statusDTO);
+	public abstract ENTIDADE atualizar(ENTIDADE statusDTO);
 
 	@PostMapping
-	abstract ENTIDADE cadastrar(@Valid @RequestBody ENTIDADE statusDTO);
+	public abstract ENTIDADE cadastrar(ENTIDADE statusDTO);
 
 	@GetMapping("/{id}")
-	abstract ENTIDADE consultar(@PathVariable ID id);
+	public abstract ENTIDADE consultar(ID id);
 
 	@DeleteMapping("/{id}")
-	abstract void excluir(@PathVariable ID id);
+	public abstract void deletar(ID id);
 
 	@GetMapping
-	abstract List<ENTIDADE> listar();
+	public abstract List<ENTIDADE> listar();
 
 }

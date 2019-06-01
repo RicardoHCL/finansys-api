@@ -20,6 +20,11 @@ public class CategoryService extends GenericService<Category, CategoryDTO, Long,
 	@Autowired
 	private CategoryRepository repository;
 
+	public CategoryDTO consultar(Long id) {
+		return null;
+	}
+
+
 	@Override
 	public CategoryRepository getRepositorio() {
 		return this.repository;

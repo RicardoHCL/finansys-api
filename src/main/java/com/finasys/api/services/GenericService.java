@@ -47,7 +47,7 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 	public List<ENTIDADEDTO> converterListaEntidadeParaListaDTO(List<ENTIDADE> pojos) throws GenericException { return null; }
 
 	@Transactional(rollbackFor = Exception.class)
-	public void excluir(ID id, User usuario) throws GenericException {
+	public void deletar(ID id, User usuario) throws GenericException {
 		ENTIDADE pojo = this.consultarPorId(id).get();
 		this.validarExclusao(pojo);
 		this.resolverPreExcluir(pojo, usuario);
@@ -55,7 +55,7 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ENTIDADEDTO, ID 
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void excluirSemValidacao(ID id) {
+	public void deletarSemValidacao(ID id) {
 		this.getRepositorio().deleteById(id);
 	}
 

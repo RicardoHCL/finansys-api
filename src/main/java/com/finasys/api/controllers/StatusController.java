@@ -6,11 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,32 +30,27 @@ public class StatusController extends GenericController<StatusDTO, Long> {
 	private StatusService service;
 
 	@Override
-	@PutMapping
 	public StatusDTO atualizar(@Valid @RequestBody StatusDTO statusDTO) {
 		return this.service.salvar(statusDTO);
 	}
 
 	@Override
-	@PostMapping
 	public StatusDTO cadastrar(@Valid @RequestBody StatusDTO statusDTO) {
 		return this.service.salvar(statusDTO);
 	}
 
 	@Override
-	@GetMapping("/{id}")
 	public StatusDTO consultar(@PathVariable Long id) {
 		return this.service.consultar(id);
 	}
 
 	@Override
-	@DeleteMapping("/{id}")
-	public void excluir(@PathVariable Long id) {
-		this.service.excluir(id, null);
+	public void deletar(@PathVariable Long id) {
+		this.service.deletar(id, null);
 	}
 
 	@Override
-	@GetMapping
-	public List<StatusDTO> listar(){
+	public List<StatusDTO> listar() {
 		return this.service.listar();
 	}
 
