@@ -24,14 +24,4 @@ public class CategoryService extends GenericService<Category, Long, CategoryRepo
 		return this.repository;
 	}
 
-	@Override
-	Category persistirEntidade(Category pojo) {
-		return this.repository.save(pojo);
-	}
-
-	@Override
-	void excluirEntidade(Long id) {
-		this.repository.deleteById(id);
-	}
-
 }

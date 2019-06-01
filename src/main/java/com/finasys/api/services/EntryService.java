@@ -24,14 +24,4 @@ public class EntryService extends GenericService<Entry, Long, EntryRepository> {
 		return this.repository;
 	}
 
-	@Override
-	Entry persistirEntidade(Entry pojo) {
-		return this.repository.save(pojo);
-	}
-
-	@Override
-	void excluirEntidade(Long id) {
-		this.repository.deleteById(id);
-	}
-
 }

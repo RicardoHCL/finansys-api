@@ -1,5 +1,7 @@
 package com.finasys.api.controllers;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +36,14 @@ public class StatusController {
 		return this.service.consultar(id);
 	}
 
+	@GetMapping
+	public List<StatusDTO> listar(){
+		return this.service.listar();
+	}
+
 	@PostMapping
 	public StatusDTO salvar(@Valid @RequestBody StatusDTO statusDTO) {
 		return this.service.salvar(statusDTO);
 	}
+
 }

@@ -1,17 +1,19 @@
 package com.finasys.api.services;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.finasys.api.exceptions.GenericException;
 import com.finasys.api.models.Pojo;
 import com.finasys.api.models.User;
-import com.finasys.api.repositories.GenericRepository;
 import com.finasys.api.utils.FinUtil;
 
 /**
@@ -19,33 +21,58 @@ import com.finasys.api.utils.FinUtil;
  * @author Ricardo Lima
  * @version 31/05/2019
  */
-public abstract class GenericService<ENTIDADE extends Pojo<ID>, ID extends Serializable, REPOSITORIO extends GenericRepository<ENTIDADE, ID>> {
+public abstract class GenericService<ENTIDADE extends Pojo<ID>, ID extends Serializable, REPOSITORIO extends JpaRepository<ENTIDADE, ID>> {
 
 	@Autowired
 	private MessageSource messageSource;
 
 	@Transactional(readOnly = true)
-	public ENTIDADE buscar(ID id) {
-		return this.getRepositorio().buscar(id);
-	}
+	public List<ENTIDADE> consultarAtivos(ENTIDADE pojo) throws GenericException { return null; }
 
 	@Transactional(readOnly = true)
+	public Optional<ENTIDADE> consultarPorId(ID id) {
+		return this.getRepositorio().findById(id);
+	}
+	@Transactional(readOnly = true)
+	public List<ENTIDADE> consultarTodos() {
+		return this.getRepositorio().findAll();
+	}
+
+	public ENTIDADE converterDTOParaObjeto(Object pojo) throws GenericException { return null; }
+
+	public List<ENTIDADE> converterListaDTOParaListaObjeto(List<Object> pojo) throws GenericException { return null; }
+
+	public List<Object> converterListaObjetoParaListaDTO(List<ENTIDADE> pojo) throws GenericException { return null; }
+
+	public Object converterObjetoParaDTO(ENTIDADE pojo) throws GenericException { return null; }
+
+	@Transactional(rollbackFor = Exception.class)
 	public void excluir(ENTIDADE pojo, User usuario) throws GenericException {
 		this.validarExclusao(pojo);
 		this.resolverPreExcluir(pojo, usuario);
-		this.excluirEntidade(pojo.getId());
+		this.getRepositorio().deleteById(pojo.getId());
 	}
 
-	@Transactional(readOnly = true)
-	public void excluirSemDependenciasSemValidacao(ID id) {
-		this.excluirEntidade(id);
+	@Transactional(rollbackFor = Exception.class)
+	public void excluirSemValidacao(ID id) {
+		this.getRepositorio().deleteById(id);
 	}
 
-	@Transactional(rollbackFor=Exception.class)
+	public String getMensagem(String key) {
+		return this.messageSource.getMessage(key, null, new Locale("pt", "BR"));
+	}
+
+	public String getMensagem(String key, String... parametros) {
+		return this.messageSource.getMessage(key, parametros, new Locale("pt", "BR"));
+	}
+
+	public abstract REPOSITORIO getRepositorio();
+
+	@Transactional(rollbackFor = Exception.class)
 	public void inativar(ENTIDADE pojo, User usuario) throws GenericException {
 		this.validarInativacao(pojo);
 		this.resolverPreInativar(pojo, usuario);
-		ENTIDADE entidade = this.buscar(pojo.getId());
+		ENTIDADE entidade = this.consultarPorId(pojo.getId()).get();
 		entidade.setAtivo(false);
 		entidade.setDataExclusao(FinUtil.getDataAtual());
 		if(usuario != null) {
@@ -56,13 +83,25 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ID extends Seria
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void salvarSemDependenciasSemValidacao(ENTIDADE pojo, User usuario) throws GenericException {
-		if(pojo.getUsuario() != null && pojo.getUsuario().getId() == null){
-			pojo.setUsuario(null);
+	public void inativarSemValidacao(ENTIDADE pojo, User usuario) throws GenericException {
+		ENTIDADE entidade = this.consultarPorId(pojo.getId()).get();
+		entidade.setAtivo(false);
+		entidade.setDataExclusao(FinUtil.getDataAtual());
+		if(usuario != null) {
+			entidade.setUsuario(new User(usuario.getId()));
 		}
-		ENTIDADE pojoBanco = this.salvarEntidade(pojo, usuario);
-		pojo.setId(pojoBanco.getId());
+		this.salvarSemDependenciasSemValidacao(entidade, usuario);
 	}
+
+	public void resolverPosDependencias(ENTIDADE pojo, User usuario) throws GenericException { }
+
+	public void resolverPosInativar(ENTIDADE pojo, User usuario) throws GenericException { }
+
+	public void resolverPreDependencias(ENTIDADE pojo, User usuario) throws GenericException { }
+
+	public void resolverPreExcluir(ENTIDADE pojo, User usuario) throws GenericException { }
+
+	public void resolverPreInativar(ENTIDADE pojo, User usuario) throws GenericException { }
 
 	@Transactional(rollbackFor = Exception.class)
 	public ENTIDADE salvar(ENTIDADE pojo, User usuario) throws GenericException {
@@ -79,7 +118,7 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ID extends Seria
 		ENTIDADE pojoBanco = this.salvarEntidade(pojo, usuario);
 		pojo.setId(pojoBanco.getId());
 		this.resolverPosDependencias(pojo, usuario);
-		
+
 		return pojo;
 	}
 
@@ -102,7 +141,7 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ID extends Seria
 		usuarioAux = null;
 		ENTIDADE pojoBanco = null;
 		try {
-			pojoBanco = this.persistirEntidade(pojo);
+			pojoBanco = this.getRepositorio().save(pojo);
 		} catch (ObjectOptimisticLockingFailureException e) {
 			e.printStackTrace();
 			throw new GenericException(this.getMensagem("Entidade Já Foi Alterada!"));
@@ -110,29 +149,14 @@ public abstract class GenericService<ENTIDADE extends Pojo<ID>, ID extends Seria
 		return pojoBanco;
 	}
 
-	public String getMensagem(String key) {
-		return this.messageSource.getMessage(key, null, new Locale("pt", "BR"));
+	@Transactional(rollbackFor = Exception.class)
+	public void salvarSemDependenciasSemValidacao(ENTIDADE pojo, User usuario) throws GenericException {
+		if(pojo.getUsuario() != null && pojo.getUsuario().getId() == null){
+			pojo.setUsuario(null);
+		}
+		ENTIDADE pojoBanco = this.salvarEntidade(pojo, usuario);
+		pojo.setId(pojoBanco.getId());
 	}
-
-	public String getMensagem(String key, String... parametros) {
-		return this.messageSource.getMessage(key, parametros, new Locale("pt", "BR"));
-	}
-
-	public abstract REPOSITORIO getRepositorio();
-
-	abstract ENTIDADE persistirEntidade(ENTIDADE pojo);
-
-	abstract void excluirEntidade(ID id);
-
-	public void resolverPosDependencias(ENTIDADE pojo, User usuario) throws GenericException { }
-
-	public void resolverPosInativar(ENTIDADE pojo, User usuario) throws GenericException { }
-
-	public void resolverPreDependencias(ENTIDADE pojo, User usuario) throws GenericException { }
-
-	public void resolverPreExcluir(ENTIDADE pojo, User usuario) throws GenericException { }
-
-	public void resolverPreInativar(ENTIDADE pojo, User usuario) throws GenericException { }
 
 	public void validarAlteracao(ENTIDADE pojo) throws GenericException { }
 
