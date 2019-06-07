@@ -1,5 +1,6 @@
 package com.finasys.api.repositories.entry;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +18,6 @@ public interface EntryRepository extends JpaRepository<Entry, Long>, EntryReposi
 	Long countByAtivoAndCategoriaId(boolean ativo, Long idCategoria);
 	Long countByAtivoAndStatusId(boolean ativo, Long idStatus);
 	List<Entry> findByAtivo(boolean ativo);
+	List<Entry> findByAtivoAndDataBetween(boolean ativo, LocalDate periodoInicial, LocalDate periodoFinal);
 }
 

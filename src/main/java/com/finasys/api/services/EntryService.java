@@ -1,6 +1,5 @@
 package com.finasys.api.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +36,10 @@ public class EntryService extends GenericService<Entry, EntryDTO, Long, EntryRep
 		return this.repository.findByAtivo(true);
 	}
 
-	public List<EntryDTO> consultarEntriesPorMesEAano(Integer month, Integer year) { // TODO Refatorar posteriormente
-		List<Entry> listaEntries = this.consultarAtivos();
-
-		return this.converterListaEntidadeParaListaDTO(this.retornarEntriesValidasDeAcordoComMesEAno(listaEntries, month, year));
+	public List<EntryDTO> consultarLancamentosPeriodicos(String periodoInicial, String periodoFinal) {
+		return this.converterListaEntidadeParaListaDTO(
+				this.repository.findByAtivoAndDataBetween(true, FinUtil.converterStringParaLocalDate(periodoInicial),
+						FinUtil.converterStringParaLocalDate(periodoFinal)));
 	}
 
 	public Long contarLancamentosVinculadoACategoria(Long idCategoria) {
@@ -90,21 +89,8 @@ public class EntryService extends GenericService<Entry, EntryDTO, Long, EntryRep
 		}
 	}
 
-	private List<Entry> retornarEntriesValidasDeAcordoComMesEAno(List<Entry> entries, Integer month, Integer year) {
-		List<Entry> listaEntries = new ArrayList<>();
-		entries.forEach(entry -> {
-			if(month.equals(entry.getData().getMonthValue()) && year.equals(entry.getData().getYear())) {
-				listaEntries.add(entry);
-			}
-		});
-
-		return listaEntries;
-	}
-
-	public EntryDTO salvar(EntryDTO entryDTO) {
-		Entry entry = this.converterDTOParaEntidade(entryDTO);
-		EntryDTO entryDTOSalvo = this.converterEntidadeParaDTO(this.salvar(entry, null));
-		return entryDTOSalvo;
+	public EntryDTO salvarEntry(EntryDTO pojoDTO) {
+		return this.converterEntidadeParaDTO(this.repository.save(this.converterDTOParaEntidade(pojoDTO)));
 	}
 
 	@Override

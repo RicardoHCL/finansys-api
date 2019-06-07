@@ -31,12 +31,12 @@ public class EntryController extends GenericController<EntryDTO, Long> {
 
 	@Override
 	public EntryDTO atualizar(@Valid @RequestBody EntryDTO entidade) {
-		return this.service.salvar(entidade);
+		return this.service.salvarEntry(entidade);
 	}
 
 	@Override
 	public EntryDTO cadastrar(@Valid @RequestBody EntryDTO entidade) {
-		return this.service.salvar(entidade);
+		return this.service.salvarEntry(entidade);
 	}
 
 	@Override

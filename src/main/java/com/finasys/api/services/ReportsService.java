@@ -13,8 +13,7 @@ public class ReportsService {
 	@Autowired
 	private EntryService entryService;
 
-
-	public List<EntryDTO> relatorioLancamentosMensais(Integer month, Integer year) {
-		return this.entryService.consultarEntriesPorMesEAano(month, year);
+	public List<EntryDTO> relatorioLancamentosPeriodicos(String periodoInicial, String periodoFinal) {
+		return this.entryService.consultarLancamentosPeriodicos(periodoInicial, periodoFinal);
 	}
 }
