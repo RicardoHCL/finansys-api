@@ -75,6 +75,16 @@ public class FinUtil {
 	}
 
 	/**
+	 * Converte data no padrão DD-MM-AAAA para DD/MM/AAAA
+	 *
+	 * @param data
+	 * @return data formatada
+	 */
+	public static String convertToDataPadrao(String data) {
+		return data.replaceAll("-", "/");
+	}
+
+	/**
 	 * Retorna a data atual
 	 *
 	 * @return Data Atual
