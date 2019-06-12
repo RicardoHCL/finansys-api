@@ -90,7 +90,7 @@ public class EntryService extends GenericService<Entry, EntryDTO, Long, EntryRep
 	}
 
 	public EntryDTO salvarEntry(EntryDTO pojoDTO) {
-		return this.converterEntidadeParaDTO(this.repository.save(this.converterDTOParaEntidade(pojoDTO)));
+		return this.converterEntidadeParaDTO(this.salvar(this.converterDTOParaEntidade(pojoDTO), null ));
 	}
 
 	@Override
