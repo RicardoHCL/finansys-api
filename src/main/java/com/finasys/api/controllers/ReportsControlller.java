@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.finasys.api.dtos.EntryDTO;
+import com.finasys.api.dtos.ReportForPeriodDTO;
 import com.finasys.api.services.ReportsService;
 
 /**
@@ -29,7 +29,7 @@ public class ReportsControlller  {
 	private ReportsService service;
 
 	@GetMapping("/{periodoInicial}/{periodoFinal}")
-	public List<EntryDTO> relatorioLancamentosPeriodicos(@PathVariable String periodoInicial, @PathVariable String periodoFinal) {
+	public List<ReportForPeriodDTO> relatorioLancamentosPeriodicos(@PathVariable String periodoInicial, @PathVariable String periodoFinal) {
 		return this.service.relatorioLancamentosPeriodicos(periodoInicial, periodoFinal);
 	}
 
